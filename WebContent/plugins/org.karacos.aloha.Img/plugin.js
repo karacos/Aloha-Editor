@@ -26,7 +26,7 @@ KaraCos.Img.init=function(){
    }; // END INIT
 
 KaraCos.Img.resourceObjectTypes = [];
-KaraCos.Img.PropsWindow = 
+//KaraCos.Img.PropsWindow = 
 KaraCos.Img.initImage = function() {
 	var that = this;
 	this.insertImgButton = new GENTICS.Aloha.ui.Button({
@@ -194,7 +194,7 @@ KaraCos.Img.findImgMarkup = function ( range ) {
 			if (! result.src) result.src = "";
 			return result;
 		}
-	} catch (e) {}
+	} catch (e) {console.log(e);}
     return null;
     
 };
