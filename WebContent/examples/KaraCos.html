@@ -13,6 +13,8 @@
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.TOC/plugin.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Link/delicious.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Link/LinkList.js"></script>
+<script type="text/javascript" src="../plugins/eu.iksproject.plugins.Loader/plugin.js"></script>
+<script type="text/javascript" src="../plugins/org.karacos.aloha.Img/plugin.js"></script>
 
 <link rel="stylesheet" href="examples.css" />
 
@@ -41,6 +43,7 @@ GENTICS.Aloha.settings = {
 		}
 	},
 	"plugins": {
+	"org.karacos.aloha.Img": {},
 	 	"com.gentics.aloha.plugins.Format": {
 		 	// all elements with no specific configuration get this configuration
 			config : [ 'b', 'i','sub','sup'],
@@ -82,15 +85,7 @@ GENTICS.Aloha.settings = {
 		  	cssclassregex : '^(?!.*aloha-editor.com).*',
 		  	cssclass : 'aloha',
 		  	// use all resources of type website for autosuggest
-		  	objectTypeFilter: ['website'],
-		  	// handle change of href
-		  	onHrefChange: function( obj, href, item ) {
-			  	if ( item ) {
-					jQuery(obj).attr('data-name', item.displayName);
-			  	} else {
-					jQuery(obj).removeAttr('data-name');
-			  	}
-		  	}
+		  	objectTypeFilter: ['website']
 		},
 	 	"com.gentics.aloha.plugins.Table": { 
 		 	// all elements with no specific configuration are not allowed to insert tables
