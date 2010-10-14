@@ -11,7 +11,7 @@ if(typeof KaraCos=="undefined"||!KaraCos)
     }
 
 KaraCos.Img=new GENTICS.Aloha.Plugin("org.karacos.aloha.Img");
-eu.iksproject.LoaderPlugin.loadAsset('org.karacos.aloha.Img', 'style', 'css');
+
 KaraCos.Img.languages=["en","fr"];
 KaraCos.Img.config = ['img'];
 /*
@@ -23,6 +23,9 @@ KaraCos.Img.init=function(){
 	that.initImage();
 	that.bindInteractions();
 	that.subscribeEvents();
+	stylePath = GENTICS_Aloha_base + '/plugins/org.karacos.aloha.Img/style.css';
+	jQuery('<link rel="stylesheet" />').attr('href', stylePath).appendTo('head');
+	
    }; // END INIT
 
 KaraCos.Img.resourceObjectTypes = [];
