@@ -139,7 +139,7 @@ KaraCos.Img.dropEventHandler = function(event){
     
     // parameter for event handler :
     // {'file': file, 'img': img}
-    var images = [];
+    var objects = [];
     while(--len >= 0) {
     	
         //alert("testing " + files[i].name);
@@ -158,7 +158,7 @@ KaraCos.Img.dropEventHandler = function(event){
         reader.readAsDataURL(files[len]);
     } //while
     GENTICS.Aloha.EventRegistry.trigger(
-    		  new GENTICS.Aloha.Event('dropFiles', GENTICS.Aloha, {'images': images})
+    		  new GENTICS.Aloha.Event('dropFiles', GENTICS.Aloha, {'objects': objects})
     		);
     return false;
 };
@@ -369,10 +369,6 @@ KaraCos.Img.subscribeEvents = function () {
             that.imgTitleField.setTargetObject(foundMarkup, 'title');
             that.imgSrcField.focus();
             GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.img');
-            GENTICS.Aloha.FloatingMenu.extTabPanel.setWidth(450);
-            //GENTICS.Aloha.FloatingMenu.obj.width(550);
-            //GENTICS.Aloha.FloatingMenu.obj.doLayout();
-            GENTICS.Aloha.FloatingMenu.extTabPanel.doLayout();
         } else {
         	that.imgSrcField.setTargetObject(null);
         }
