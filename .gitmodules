@@ -1,3 +1,9 @@
 [submodule "WebContent/plugins/com.bal.aloha.plugins.Image"]
 	path = WebContent/plugins/com.bal.aloha.plugins.Image
 	url = git@github.com:balupton/Aloha-Image-Plugin.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.Image"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.Image
+	url = ssh://git@github.com/alohaeditor/Aloha-Plugin-Image.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.DragnDropFiles"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.DragnDropFiles
+	url = /media/FC0E-9CA1/bare/Aloha-plugin-DragnDropFiles.git/
