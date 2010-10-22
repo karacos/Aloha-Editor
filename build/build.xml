@@ -184,7 +184,7 @@
 		</java>
 		
 		<!-- compress all plugin.js files -->
-		<apply executable="${java}" output="${outdir}/compressor.log" append="true" failonerror="true" relative="true" dir="${alohadir}/plugins">
+		<apply executable="${java}" output="${outdir}/compressor.log" append="true" failonerror="false" relative="true" dir="${alohadir}/plugins">
 			<mapper type="identity" />
 			
 			<arg value="-cp" /> 
@@ -194,8 +194,11 @@
 			<arg line="--type js --nomunge --verbose --charset UTF-8 -o" />
 			<srcfile />
 			<targetfile />
-			
-			<fileset dir="${alohadir}/plugins/" includes="**/*.js" />
+
+			<fileset dir="${alohadir}/plugins/">
+				<exclude name="**/examples/**"/>
+				<include name="**/*.js"/>
+			</fileset>
 		</apply>
 
 		<!-- remove all javascript files from the deps folder as they are already included in aloha -->
