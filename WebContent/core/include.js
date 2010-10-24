@@ -60,7 +60,7 @@ document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/s
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/sidebar.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/repositorymanager.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/repository.js"></script>');
-	
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/repositoryobjects.js"></script>');	
 	/* Generate xHTML valid js include Elements */
 	function jsElement( link ) {
 		var jslink = document.createElement("script");
