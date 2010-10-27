@@ -42,4 +42,10 @@
 	url = http://github.com/nka11/Aloha-Plugin-KaraCos.git
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles
-	url = http://github.com/alohaeditor/Aloha-Plugin-DragAndDropFiles.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-DragAndDropFiles.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.Abbr"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.Abbr
+	url = https://github.com/alohaeditor/Aloha-Plugin-Abbr.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.LinkChecker"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.LinkChecker
+	url = https://github.com/alohaeditor/Aloha-Plugin-LinkChecker.git
