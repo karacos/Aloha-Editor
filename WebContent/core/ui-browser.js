@@ -111,6 +111,7 @@ GENTICS.Aloha.ui.Browser = function () {
             		// sets the ui object containing the items list
             		resourceItem.viewGrid = this.grid;
             		var resourceItem = node.attributes;
+            		resourceItem.viewGrid = this.grid;
             		if (resourceItem.colModel) {
             			this.grid.reconfigure(this.exploreStore,resourceItem.colModel);
             		} else {
