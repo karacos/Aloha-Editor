@@ -24,6 +24,9 @@ rescue LoadError
 	RDOC_INCLUDED = false
 end
 
+IS_WINDOWS = ENV['windir'] ? true : false
+WINDOWS_CLI = `echo $PATH`.strip().eql?('$PATH') ? true : false
+
 class App
 	# Remotes
 	REMOTE_ALOHA_URL	= 'http://github.com/alohaeditor/Aloha-Editor.git'
@@ -31,7 +34,7 @@ class App
 
 	# Versioning
 	BRANCH_DEV			= 'dev'
-	BRANCH_VERSION	= '0.9.4'
+	BRANCH_VERSION	= '0.10'
 	BRANCH_MASTER		= 'master'
 
 	# Building
@@ -60,7 +63,7 @@ class App
 
 	# Run a Command
 	def run ( command, output=true )
-
+    # Recurse
 		if command.kind_of?(Array)
 			result = ""
 			command.each do |c|
@@ -69,17 +72,53 @@ class App
 			return result
 		end
 
+    # Output
 		if output
 			puts command + "\n"
 		end
 
-		result = `#{command}`
+    # Windows
+    if WINDOWS_CLI
+      command_e = command.gsub('"','\\"')
+      result = `bash -c "#{command_e}"`
+    else
+		  result = `#{command}`
+		end
 
+    # Output
 		if output
 			puts result
 		end
+
+		# Done
 		return result
 	end
+
+  # Check if a binary exists
+  def bin_exists? (bin)
+  	exists = !run("which #{bin}",false).strip.empty?
+  	return exists
+  end
+
+  # Fail if the binary doesn't exist
+  def check_req (req)
+    # Recurse
+  	if req.kind_of?(Array)
+  		req.each do |r|
+  			check_req(r)
+  		end
+  		return true
+  	end
+
+    # Check
+  	req_exists = bin_exists?(req)
+  	unless req_exists
+  		abort("CLI requires the following binary which is not installed: #{req}")
+  	end
+
+    # Done
+  	return true
+  end
 
 	# Download a File
 	def download ( url, file )
@@ -103,13 +142,7 @@ class App
 	# Initialise our Environment
 	def init_env
 		# Check for Requirements
-		reqs = ['mkdir','curl','tar','git','ant','rm','mv','java']
-		reqs.each do |req|
-			has_req = run("which #{req}",false).strip
-			if has_req.empty?
-				abort("CLI requires the following binary which is not installed: #{req}")
-			end
-		end
+		check_req(['mkdir','curl','tar','git','rm','mv'])
 
 		# Do not care for compilation yet
 		return
@@ -222,16 +255,16 @@ class App
 
 	# Check if a Branch Exists
 	def branch_exists(branch)
-		branches = run("git branch")
-		regex = Regexp.new('[\\n\\s\\*]+' +	Regexp.escape(branch) + '\\n')
+		branches = run("git branch",false)
+		regex = Regexp.new('[\\n\\s\\*]+' +	Regexp.escape(branch.to_s) + '\\n')
 		result = ((branches =~ regex) ? true : false)
 		return result
 	end
 
 	# Check if a Branch Exists
 	def remote_branch_exists(branch)
-		branches = run("git branch -all")
-		regex = Regexp.new('\\/' +	Regexp.escape(branch) + '\\n')
+		branches = run("git branch -all",false)
+		regex = Regexp.new('\\/' +	Regexp.escape(branch.to_s) + '\\n')
 		result = ((branches =~ regex) ? true : false)
 		return result
 	end
@@ -242,12 +275,28 @@ class App
 			run("git checkout #{branch}")
 		else
 			if remote_branch_exists(branch)
-				run("git fetch")
+				fetch(REMOTE_ALOHA)
 				run("git checkout -b #{branch} #{REMOTE_ALOHA}/#{branch}")
 			else
 				run("git branch #{branch} #{BRANCH_MASTER}")
 			end
 		end
+	end
+
+	# Apply multiple commands to submodules
+	def submodule_foreach(command)
+	  # Recursion
+		if command.kind_of?(Array)
+			result = ""
+			command.each do |c|
+				result = result + submodule_foreach(c)
+			end
+			return result
+		end
+
+		result = run("git submodule foreach --recursive '" + command + "'")
+
+		return result
 	end
 
 	# Check if a Remote Exists
@@ -261,13 +310,25 @@ class App
 	# Add a Remote
 	def remote_add(url,name)
 		unless remote_exists(name)
-			run(["git remote add #{name} #{url}","git fetch"])
+			run("git remote add #{name} #{url}")
+			fetch(name)
 		end
 	end
 
+	# Fetch a Remote
+	def fetch(remote="")
+		run("git fetch " + remote)
+	end
+
 	# Merge a Branch In
-	def merge(branch)
-		run("git merge #{branch}")
+	def merge(branch,parent=false)
+		if parent
+			checkout(branch)
+			checkout(parent)
+			merge(branch)
+		else
+			run("git merge #{branch}")
+		end
 	end
 
 	# Stage Known Files
@@ -340,8 +401,16 @@ class App
 	def init_submodules
 		run([
 			"git submodule init",
-			"git submodule update",
-			"git submodule foreach --recursive git reset --hard && git branch -D dev && git checkout -b dev origin/dev && git checkout master && git submodule init && git submodule update --merge"
+			"git submodule update"
+		])
+
+		submodule_foreach([
+			"git reset --hard",
+			"git remote update",
+			"git fetch origin",
+			"git checkout master",
+			"git submodule init",
+			"git submodule update"
 		])
 	end
 
@@ -349,8 +418,12 @@ class App
 	def update_submodules
 		run([
 			"git submodule init",
-			"git submodule update --merge",
-			"git submodule foreach git submodule init && git submodule update --merge"
+			"git submodule update --merge"
+		])
+
+		submodule_foreach([
+			"git submodule init",
+			"git submodule update --merge"
 		])
 	end
 
@@ -358,8 +431,12 @@ class App
 	def upgrade_submodules
 		run([
 			"git submodule init",
-			"git submodule update --merge",
-			"git submodule foreach git checkout master && git pull --all"
+			"git submodule update --merge"
+		])
+
+		submodule_foreach([
+			"git checkout master",
+			"git pull --all"
 		])
 	end
 
@@ -379,7 +456,6 @@ class App
 	def install
 		init_branches
 		init_submodules
-		update_branches
 	end
 
 	# Update
@@ -396,7 +472,8 @@ class App
 
 	# Build Aloha Editor
 	def build
-		run(["cd build","ant build","cd .."])
+		check_req(['java','ant'])
+		run("ant -f build/build.xml build")
 	end
 
 	# ---------------------------------------------------------------------------
@@ -498,7 +575,7 @@ class Booter
 		# True if required arguments were provided
 		def arguments_valid?
 			# TO DO - implement your real logic here
-			true if @arguments.length == 1
+			true if @arguments.length >= 1
 		end
 
 		# Setup the arguments
@@ -531,12 +608,30 @@ class Booter
 			# Create Application
 			app = App.new
 
+			# Extract
+			args = @arguments.clone
+			command = args.shift.gsub('-','_')
+
+
 			# Fetch + Execute
-			command = @arguments[0].gsub('-','_')
 			unless app.respond_to?(command)
 				abort("Unknown command: #{command}")
 			end
-			app.send(command)
+
+			case args.length
+				when 0
+					app.send(command)
+				when 1
+					app.send(command,args[0])
+				when 2
+					app.send(command,args[0],args[1])
+				when 3
+					app.send(command,args[0],args[1],args[2])
+				when 4
+					app.send(command,args[0],args[1],args[2],args[3])
+				else
+					app.send(command,args)
+			end
 		end
 
 		def process_standard_input
@@ -549,7 +644,6 @@ class Booter
 			#end
 		end
 end
-
 
 # Create Booter
 booter = Booter.new(ARGV, STDIN)
